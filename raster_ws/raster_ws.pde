@@ -8,6 +8,7 @@ Scene scene;
 Frame frame;
 Vector v1, v2, v3;
 Vector[] v;
+color[] c;
 // timing
 TimingTask spinningTask;
 boolean yDirection;
@@ -30,6 +31,11 @@ void setup() {
     scene.setType(Scene.Type.ORTHOGRAPHIC);
   scene.setRadius(width/2);
   scene.fitBallInterpolation();
+  strokeCap(SQUARE);
+  c = new color[3];
+  c[0] = randomColor();
+  c[1] = randomColor();
+  c[2] = randomColor();
 
   // not really needed here but create a spinning task
   // just to illustrate some frames.timing features. For
@@ -77,50 +83,25 @@ void draw() {
 void triangleRaster() {
   // frame.location converts points from world to frame
   // here we convert v1 to illustrate the idea
-  float cellSize = width/pow( 2, n);
-  //rotate(PI/2);
-  for ( int x = round(-(width/2)); x < round((width/2)); x+=width/pow( 2, n) ){
-    for( int y = round(-(height/2)); y < round((height/2)); y+=height/pow( 2, n) ){
-      Vector p = new Vector(x + cellSize/2, y + cellSize/2);
-      boolean inside = inside(p);
-      if(inside){
-        //point(frame.location(p).x(), frame.location(p).y());
-        rect(frame.location(p).x(), frame.location(p).y(), -drawCellZize, -drawCellZize);
-        /*float x1 = frame.location(p).x();
-        float y1 = frame.location(p).y();
-        float x2 = frame.location(p).x() + pow( 2, n+1)/width;
-        float y2 = frame.location(p).y();
-        float x3 = frame.location(p).x() + pow( 2, n+1)/width;
-        float y3 = frame.location(p).y() + pow( 2, n+1)/height;
-        float x4 = frame.location(p).x();
-        float y4 = frame.location(p).y() + pow( 2, n+1)/height;
-        quad(x1, y1, x2, y2, x3, y3, x4, y4);*/
-      //println("int" + p.x() + " " + p.y() );
-      //println( "frame " + frame.location(p).x() + " " + frame.location(p).y() );
-      }
-    }
-  }
-  /*
-  int dimension = width * height;
-  loadPixels();
-  for ( int i=0; i<dimension; i++ ){
-    int x = (i%width) - (width/2);
-    int y = (int)Math.ceil(i/width) - (width/2);
-    Vector p = new Vector(x, y);
-    boolean inside = inside(p);
-    println( x + " " + y );
-    println( frame.location(p).x() + " " + frame.location(p).y() );
-    if(inside)
-      point(round(x), round(y));
-  }
-  //println(v1.x() + " " + v1.y());
-  //println(round(frame.location(v1).x()) + " " + round(frame.location(v1).y()));
-  updatePixels();
-  */
   if (debug) {
     pushStyle();
     stroke(255, 255, 0, 125);
-    point(round(frame.location(v1).x()), round(frame.location(v1).y()));
+    float cellSize = width/pow( 2, n);
+    //rotate(PI/2);
+    for ( int x = round(-(width/2)); x < round((width/2)); x+=width/pow( 2, n) ){
+      for( int y = round(-(height/2)); y < round((height/2)); y+=height/pow( 2, n) ){
+        Vector p = new Vector(x + cellSize/2, y + cellSize/2);
+        float[] lambda = compute(p);
+        if(lambda != null){
+          color col = color(lambda[0] * c[0] + lambda[1] * c[1] + lambda[2] * c[2]);
+          println( red(col));
+          stroke(col);
+          point(frame.location(p).x(), frame.location(p).y());
+          //rect(frame.location(p).x(), frame.location(p).y(), 1, 1);
+        }
+      }
+    }
+    //point(round(frame.location(v1).x()), round(frame.location(v1).y()));
     popStyle();
   }
 }
@@ -146,27 +127,6 @@ void drawTriangleHint() {
   point(v2.x(), v2.y());
   point(v3.x(), v3.y());
   popStyle();
-}
-
-boolean edgeFunction(Vector a, Vector b, Vector c) { 
-    return ((c.x() - a.x()) * (b.y() - a.y()) - (c.y() - a.y()) * (b.x() - a.x()) >= 0); 
-} 
-
-boolean inside(Vector p){
-  boolean inside = true;
-  if( !orientation( v[0], v[1], v[2] ) )
-    for(int i = 2; i >= 0; i--)
-      inside &= edgeFunction(v[(i+1)%3], v[i], p);
-  else
-    for(int i = 0; i < 3; i++)
-      inside &= edgeFunction(v[i], v[(i+1)%3], p);
-  return inside;
-}
-
-boolean orientation(Vector v0, Vector v1, Vector v2){
-  Vector a = new Vector( v2.x() - v0.x(), v2.y() - v0.y() );
-  Vector b = new Vector( v1.x() - v0.x(), v1.y() - v0.y() );
-  return a.x() * b.y() - a.y() * b.x() > 0;
 }
 
 void keyPressed() {
