@@ -9,6 +9,7 @@ Frame frame;
 Vector v1, v2, v3;
 Vector[] v;
 color[] c;
+int antiAliasing;
 // timing
 TimingTask spinningTask;
 boolean yDirection;
@@ -36,7 +37,9 @@ void setup() {
   c[0] = randomColor();
   c[1] = randomColor();
   c[2] = randomColor();
-
+  antiAliasing = 4;
+  
+  
   // not really needed here but create a spinning task
   // just to illustrate some frames.timing features. For
   // example, to see how 3D spinning from the horizon
@@ -93,8 +96,10 @@ void triangleRaster() {
         Vector p = new Vector(x + cellSize/2, y + cellSize/2);
         float[] lambda = compute(p);
         if(lambda != null){
-          color col = color(lambda[0] * c[0] + lambda[1] * c[1] + lambda[2] * c[2]);
-          println( red(col));
+          float red = lambda[0] * red(c[0]) + lambda[0] * red(c[1]) + lambda[0] * red(c[2]);
+          float green = lambda[1] * red(c[0]) + lambda[1] * red(c[1]) + lambda[1] * red(c[2]);
+          float blue = lambda[2] * red(c[0]) + lambda[2] * red(c[1]) + lambda[2] * red(c[2]);
+          color col = color(red, green, blue);
           stroke(col);
           point(frame.location(p).x(), frame.location(p).y());
           //rect(frame.location(p).x(), frame.location(p).y(), 1, 1);
