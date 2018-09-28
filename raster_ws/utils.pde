@@ -13,15 +13,11 @@ float[] compute(Vector p){
   if( !orientation( v[0], v[1], v[2] ) )
     for(int i = 2; i >= 0; i--){
       edge[i] = edgeFunction(v[(i+1)%3], v[i], p);
-      if(edge[i] == 0)
-        return new float[]{-1,-1,-1};
       inside &= edge[i] > 0;
     }
   else
     for(int i = 0; i < 3; i++){
       edge[i] = edgeFunction(v[i], v[(i+1)%3], p);
-      if(edge[i] == 0)
-        return new float[]{-1,-1,-1};
       inside &= edge[i] > 0;
     }
   if( !inside ) return null;

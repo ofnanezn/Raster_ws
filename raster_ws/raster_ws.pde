@@ -38,8 +38,8 @@ void setup() {
   c[1] = randomColor();
   c[2] = randomColor();
   antiAliasing = 4;
-  
-  
+
+
   // not really needed here but create a spinning task
   // just to illustrate some frames.timing features. For
   // example, to see how 3D spinning from the horizon
@@ -52,7 +52,7 @@ void setup() {
   // world system.
   spinningTask = new TimingTask() {
     @Override
-    public void execute() {
+      public void execute() {
       scene.eye().orbit(scene.is2D() ? new Vector(0, 0, 1) :
         yDirection ? new Vector(0, 1, 0) : new Vector(1, 0, 0), PI / 100);
     }
@@ -83,29 +83,35 @@ void draw() {
 
 // Implement this function to rasterize the triangle.
 // Coordinates are given in the frame system which has a dimension of 2^n
+
+void rasterize(int startx, int starty, int endx, int endy, int cellSize, boolean master) {
+  for (int x = startx; x <= endx; x += cellSize ) {
+    for (int y = starty; y <= endy; y += cellSize ){
+      Vector p = new Vector(x + cellSize, y + cellSize);
+      float[] lambda = compute(p);
+      //println(x);
+      if(lambda == null) continue;
+      float red = lambda[0] * red(c[0]) + lambda[0] * red(c[1]) + lambda[0] * red(c[2]);
+      float green = lambda[1] * red(c[0]) + lambda[1] * red(c[1]) + lambda[1] * red(c[2]);
+      float blue = lambda[2] * red(c[0]) + lambda[2] * red(c[1]) + lambda[2] * red(c[2]);
+      color col = color(red, green, blue);
+      stroke(col);
+      point(frame.location(p).x(), frame.location(p).y());
+      //rect(frame.location(p).x(), frame.location(p).y(), 1, 1);
+   
+    }
+  }
+}
+
 void triangleRaster() {
   // frame.location converts points from world to frame
   // here we convert v1 to illustrate the idea
   if (debug) {
     pushStyle();
     stroke(255, 255, 0, 125);
-    float cellSize = width/pow( 2, n);
+    int cellSize = round(width/pow(2, n));
     //rotate(PI/2);
-    for ( int x = round(-(width/2)); x < round((width/2)); x+=width/pow( 2, n) ){
-      for( int y = round(-(height/2)); y < round((height/2)); y+=height/pow( 2, n) ){
-        Vector p = new Vector(x + cellSize/2, y + cellSize/2);
-        float[] lambda = compute(p);
-        if(lambda != null){
-          float red = lambda[0] * red(c[0]) + lambda[0] * red(c[1]) + lambda[0] * red(c[2]);
-          float green = lambda[1] * red(c[0]) + lambda[1] * red(c[1]) + lambda[1] * red(c[2]);
-          float blue = lambda[2] * red(c[0]) + lambda[2] * red(c[1]) + lambda[2] * red(c[2]);
-          color col = color(red, green, blue);
-          stroke(col);
-          point(frame.location(p).x(), frame.location(p).y());
-          //rect(frame.location(p).x(), frame.location(p).y(), 1, 1);
-        }
-      }
-    }
+    rasterize(round(-(width/2)),round(-(height/2)), round((width/2)), round((height/2)), cellSize, true);
     //point(round(frame.location(v1).x()), round(frame.location(v1).y()));
     popStyle();
   }
@@ -117,7 +123,7 @@ void randomizeTriangle() {
   v1 = new Vector(random(low, high), random(low, high));
   v2 = new Vector(random(low, high), random(low, high));
   v3 = new Vector(random(low, high), random(low, high));
-  v = new Vector[]{v1,v2,v3};
+  v = new Vector[]{v1, v2, v3};
 }
 
 void drawTriangleHint() {
