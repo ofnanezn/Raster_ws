@@ -85,30 +85,24 @@ void draw() {
 // Coordinates are given in the frame system which has a dimension of 2^n
 
 void rasterize(int startx, int starty, int endx, int endy, int cellSize, boolean master) {
-  int cnt = 0;
   for (int x = startx; x <= endx; x += cellSize ) {
     for (int y = starty; y <= endy; y += cellSize ){
-      Vector p = new Vector(x + cellSize/2, y + cellSize/2);
-      float[] lambda = compute(p, cellSize/2);
+      Vector p = new Vector(x + cellSize, y + cellSize);
+      float[] lambda = compute(p);
       //println(x);
       if(lambda == null) continue;
-      if(lambda[0] == -1 && master){
-        cnt+=1;
-        println("hola" + cnt);
-        stroke(255,0,0);
-        strokeCap(ROUND);
-        point(frame.location(p).x(), frame.location(p).y());
-        rasterize(x,y, x+cellSize, y+cellSize, cellSize/4, true);
-        continue;
-      }
+      if (lambda[0] == -1 && master) {
+        println("hola");
+        rasterize(x, y, x + cellSize, y + cellSize, cellSize/antiAliasing, false);
+      } 
       float red = lambda[0] * red(c[0]) + lambda[0] * red(c[1]) + lambda[0] * red(c[2]);
       float green = lambda[1] * red(c[0]) + lambda[1] * red(c[1]) + lambda[1] * red(c[2]);
       float blue = lambda[2] * red(c[0]) + lambda[2] * red(c[1]) + lambda[2] * red(c[2]);
       color col = color(red, green, blue);
       stroke(col);
-      strokeCap(SQUARE);
       point(frame.location(p).x(), frame.location(p).y());
       //rect(frame.location(p).x(), frame.location(p).y(), 1, 1);
+   
     }
   }
 }
