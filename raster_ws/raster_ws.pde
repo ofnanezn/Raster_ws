@@ -37,7 +37,7 @@ void setup() {
   c[0] = randomColor();
   c[1] = randomColor();
   c[2] = randomColor();
-  antiAliasing = 4;
+  antiAliasing = 2;
 
 
   // not really needed here but create a spinning task
@@ -89,16 +89,15 @@ void rasterize(int startx, int starty, int endx, int endy, int cellSize, boolean
   for (int x = startx; x <= endx; x += cellSize ) {
     for (int y = starty; y <= endy; y += cellSize ){
       Vector p = new Vector(x + cellSize/2, y + cellSize/2);
-      float[] lambda = compute(p, cellSize/2);
+      float[] lambda = compute(p, cellSize/2, master);
       //println(x);
       if(lambda == null) continue;
       if(lambda[0] == -1 && master){
         cnt+=1;
-        println("hola" + cnt);
         stroke(255,0,0);
         strokeCap(ROUND);
-        point(frame.location(p).x(), frame.location(p).y());
-        rasterize(x,y, x+cellSize, y+cellSize, cellSize/4, true);
+        //point(frame.location(p).x(), frame.location(p).y());
+        rasterize(x,y, x+cellSize, y+cellSize, cellSize/antiAliasing, false);
         continue;
       }
       float red = lambda[0] * red(c[0]) + lambda[0] * red(c[1]) + lambda[0] * red(c[2]);
@@ -174,4 +173,11 @@ void keyPressed() {
       spinningTask.run(20);
   if (key == 'y')
     yDirection = !yDirection;
+  if (key == 'a'){
+    if(antiAliasing * 2 >= 8)
+      antiAliasing = 2;
+    else
+      antiAliasing *= 2;
+    println(antiAliasing);
+  }
 }

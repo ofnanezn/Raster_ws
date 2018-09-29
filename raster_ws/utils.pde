@@ -5,40 +5,42 @@ float edgeFunction(Vector a, Vector b, Vector c) {
     return ((c.x() - a.x()) * (b.y() - a.y()) - (c.y() - a.y()) * (b.x() - a.x())); 
 } 
 
-float[] compute(Vector p, float delta){
+float[] compute(Vector p, float delta, boolean master){
   boolean inside = true;
   float[] lambda = new float[3];
   float[] edge = new float[3];
   float area = edgeFunction(v[0], v[1], v[2]);
   //if( p.x()  && p.y() )
   if( !orientation( v[0], v[1], v[2] ) ){
-    for(int i = 0; i < 3; i++){
-      float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
-      float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
-      float e2 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()+delta));
-      float e3 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()+delta));
-      float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
-      float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
-      if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 <= 0 && ef2 <= 0 )){
-        return new float[]{-1,-1,-1};
+    if(master)
+      for(int i = 0; i < 3; i++){
+        float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
+        float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
+        float e2 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()+delta));
+        float e3 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()+delta));
+        float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
+        float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
+        if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 <= 0 && ef2 <= 0 )){
+          return new float[]{-1,-1,-1};
+        }
       }
-    }
     for(int i = 2; i >= 0; i--){
       edge[i] = edgeFunction(v[(i+1)%3], v[i], p);
       inside &= edge[i] > 0;
     }
   }else{
-    for(int i = 0; i < 3; i++){
-      float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
-      float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
-      float e2 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()+delta));
-      float e3 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()+delta));
-      float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
-      float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
-      if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 > 0 && ef2>0 )){
-        return new float[]{-1,-1,-1};
+    if(master)
+      for(int i = 0; i < 3; i++){
+        float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
+        float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
+        float e2 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()+delta));
+        float e3 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()+delta));
+        float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
+        float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
+        if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 > 0 && ef2>0 )){
+          return new float[]{-1,-1,-1};
+        }
       }
-    }
     for(int i = 0; i < 3; i++){
       edge[i] = edgeFunction(v[i], v[(i+1)%3], p);
       inside &= edge[i] > 0;
