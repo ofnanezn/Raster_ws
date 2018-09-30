@@ -7,12 +7,15 @@ float edgeFunction(Vector a, Vector b, Vector c) {
 
 float[] compute(Vector p, float delta, boolean master){
   boolean inside = true;
-  float[] lambda = new float[3];
+  float[] lambda = new float[4];
   float[] edge = new float[3];
   float area = edgeFunction(v[0], v[1], v[2]);
   //if( p.x()  && p.y() )
   if( !orientation( v[0], v[1], v[2] ) ){
-    if(master)
+      for(int i = 2; i >= 0; i--){
+        edge[i] = edgeFunction(v[(i+1)%3], v[i], p);
+        inside &= edge[i] > 0;
+      }
       for(int i = 0; i < 3; i++){
         float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
         float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
@@ -21,15 +24,18 @@ float[] compute(Vector p, float delta, boolean master){
         float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
         float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
         if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 <= 0 && ef2 <= 0 )){
-          return new float[]{-1,-1,-1};
+          lambda[0] = abs(edge[1]/area);
+          lambda[1] = abs(edge[2]/area);
+          lambda[2] = abs(edge[0]/area);
+          lambda[3] = -1;
+          return lambda;
         }
       }
-    for(int i = 2; i >= 0; i--){
-      edge[i] = edgeFunction(v[(i+1)%3], v[i], p);
-      inside &= edge[i] > 0;
-    }
   }else{
-    if(master)
+      for(int i = 0; i < 3; i++){
+        edge[i] = edgeFunction(v[i], v[(i+1)%3], p);
+        inside &= edge[i] > 0;
+      }
       for(int i = 0; i < 3; i++){
         float e0 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()-delta,p.y()-delta));
         float e1 = edgeFunction(v[i], v[(i+1)%3], new Vector(p.x()+delta,p.y()-delta));
@@ -38,18 +44,19 @@ float[] compute(Vector p, float delta, boolean master){
         float ef1 = edgeFunction(v[(i+1)%3], v[(i+2)%3], new Vector(p.x(),p.y()));
         float ef2 = edgeFunction(v[(i+2)%3], v[(i+3)%3], new Vector(p.x(),p.y()));
         if((e0 * e3 <= 0 || e1*e2 <= 0) && (ef1 > 0 && ef2>0 )){
-          return new float[]{-1,-1,-1};
+          lambda[0] = abs(edge[1]/area);
+          lambda[1] = abs(edge[2]/area);
+          lambda[2] = abs(edge[0]/area);
+          lambda[3] = -1;
+          return lambda;
         }
       }
-    for(int i = 0; i < 3; i++){
-      edge[i] = edgeFunction(v[i], v[(i+1)%3], p);
-      inside &= edge[i] > 0;
-    }
   }
   if( !inside ) return null;
   lambda[0] = abs(edge[1]/area);
   lambda[1] = abs(edge[2]/area);
   lambda[2] = abs(edge[0]/area);
+  lambda[3] = 1;
   return lambda;
 }
 
