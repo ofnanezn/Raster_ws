@@ -49,7 +49,7 @@ donde $T$ es el conjunto de aristas en el triángulo.
 
 En caso de que se cumpla que la celda se encuentra dentro del triángulo, esta se pinta de algún color en particular.
 
-### Coordenadas Baricéntricas
+### Coordenadas Baricéntricas:
 Para las coordenadas baricéntricas, lo que se hizo fue en primer lugar fue asignar un color a cada uno de los vértices (rojo, verde y azul); para luego pintar la parte interior del triángulo en el punto $P$ de acuerdo a la siguiente expresión:
 
 $$C_P= \lambda_0 C_{v_0} + \lambda_1 C_{v_1} + \lambda_2 C_{v_2}$$
@@ -68,13 +68,14 @@ Por lo cual, se puede calcular una sola vez con el fin de ahorrarse algunos cál
 
 Finalmente, la celda se pinta con respecto al ponderado de cada uno de estos colores, dando así una sensación de combinación de los colores de cada vértice dentro del triángulo.
 
-### Antialiasing
+### Antialiasing:
 La técnica utilizada para el antialiasing consiste en subdividir la celda que se está evaluando, en 4,8, 16... subceldas dependiendo del nivel de suavidad que se requiera, para después calcular el procentaje de subceldas que están dentro del triángulo. De acuerdo a este porcentaje se computa el nuevo color, a partir de un promedio ponderado entre el color del fondo y el color original de la celda.
 
 Los resultados obtenidos reducen considerablemente los "jaggies" al subdividir las celdas en 16 subceldas para calcular el promedio de celdas dentro del triángulo. Subdivisiones más precisas resultan muy pesadas para una máquina de escritorio corriente, y el programa no es capaz de responder.
 
 La técnica utilizada es conocida como prefiltering[1]. Es descrita también en[2]
 
+Para utlizarlo, presionar la tecla "a" al correr el Sketch. Presionarla cambiará el nivel de antialiasing entre 1, 2, 4 y 1 de nuevo. 2 significa 4 subdivisiones por cada celda, mientras que 4 siginifica 16 subdivisiones.
 
 ## Referencias
 [[1] Antialiasing strategies](https://web.cs.wpi.edu/~matt/courses/cs563/talks/antialiasing/methods.html)
